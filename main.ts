@@ -46,9 +46,13 @@ function countFiles(dir) {
 }
 
 function main() {
-  // Mulai dari direktori keluaran yang bersih supaya tidak ada sisa run lama.
-  rmSync(outDir, { recursive: true, force: true });
+  // Mulai dari direktori keluaran yang bersih — tapi hapus ISINYA saja,
+  // bukan direktorinya sendiri: di penilai, /output adalah mount yang
+  // induknya read-only, jadi menghapus /output itu sendiri ditolak (EACCES).
   mkdirSync(outDir, { recursive: true });
+  for (const entry of readdirSync(outDir)) {
+    rmSync(join(outDir, entry), { recursive: true, force: true });
+  }
 
   const gameFiles = copyTree('game');
   const shotFiles = copyTree('screenshots');
